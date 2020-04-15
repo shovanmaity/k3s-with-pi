@@ -1,21 +1,23 @@
 ## Configure worker node(s) for your Kubernetes cluster
 
-1. SSH into one Pi and change the hostname `/etc/hostname`. After changing it will look like below -
+This is required only if You want to create a multi-node Kubernetes cluster. You need to boot another Pi and follow the below steps. You can add as many worker nodes as you want. Only the hostname will be different.
+
+1. SSH into one Pi and change the hostname `/etc/hostname`. After changing it will look like below (You can give a different hostname) -
    ```
-    pi@raspberrypi:~ $ cat /etc/hostname 
-    pi-worker-0
+   pi@raspberrypi:~ $ cat /etc/hostname
+   pi-worker-0
    ```
 
-2. Also change the `/etc/hosts` file. After changing it will look like below -
+2. Change the `/etc/hosts` file accordingly. After changing it will look like below -
    ```
-    pi@pi-master:~ $ cat /etc/hosts
-    127.0.0.1     localhost
-    ::1           localhost ip6-localhost ip6-loopback
-    ff02::1       ip6-allnodes
-    ff02::2       ip6-allrouters
+   pi@pi-master:~ $ cat /etc/hosts
+   127.0.0.1     localhost
+   ::1           localhost ip6-localhost ip6-loopback
+   ff02::1       ip6-allnodes
+   ff02::2       ip6-allrouters
 
-    127.0.1.1     pi-worker-0
-    192.168.1.34  pi-master
+   127.0.1.1     pi-worker-0
+   192.168.1.34  pi-master
    ```
 
    NOTE :- I am using a domain name for master IP. If IP of master got changed I need to update `/etc/hosts` file only.
@@ -24,9 +26,9 @@
 
 4. Install k3s agent.
    ```bash
-    export K3S_URL="https://pi-master:6443"
-    export K3S_TOKEN="K101d88e0cbe0f988377eac34e6d7fdf14de156836a63a1869b78385b7a2dba9cba::server:8ae7278428a3e50fa2fea2d376455444"
-    curl -sfL https://get.k3s.io | sh -
+   export K3S_URL="https://pi-master:6443"
+   export K3S_TOKEN="K101d88e0cbe0f988377eac34e6d7fdf14de156836a63a1869b78385b7a2dba9cba::server:8ae7278428a3e50fa2fea2d376455444"
+   curl -sfL https://get.k3s.io | sh -
    ```
 
    NOTE :- `K3S_TOKEN` will be your node token.
@@ -52,24 +54,6 @@
    ```
 
 5. Verify the k3s-agent service using `sudo systemctl status k3s-agent --no-pager`
-   ```
-   pi@pi-worker-0:~ $ sudo systemctl status k3s-agent
-   ● k3s-agent.service - Lightweight Kubernetes
-      Loaded: loaded (/etc/systemd/system/k3s-agent.service; enabled; vendor preset: enabled)
-      Active: active (running) since Sat 2020-04-11 09:38:00 BST; 12s ago
-      Docs: https://k3s.io
-   Process: 834 ExecStartPre=/sbin/modprobe br_netfilter (code=exited, status=0/SUCCESS)
-   Process: 836 ExecStartPre=/sbin/modprobe overlay (code=exited, status=0/SUCCESS)
-   Main PID: 838 (k3s)
-      Tasks: 6
-      Memory: 123.0M
-      CGroup: /system.slice/k3s-agent.service
-            └─838 /usr/local/bin/k3s agent
-
-   Apr 11 09:38:00 pi-worker-0 systemd[1]: Starting Lightweight Kubernetes...
-   Apr 11 09:38:00 pi-worker-0 systemd[1]: Started Lightweight Kubernetes.
-   Apr 11 09:38:00 pi-worker-0 k3s[838]: time="2020-04-11T09:38:00+01:00" level=info msg="Preparing data dir /var/lib/r
-   ```
 
 6. Verify the node by using `sudo k3s kubectl get node` from your Kubernetes master or from local machine.
    ``` 
